@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "crawler": "^1.1.4",
-    "lodash": "^4.17.10"
+    "lodash": "^4.17.10",
+    "neo4j-driver": "^1.6.1"
   }
 }
