@@ -16,6 +16,10 @@ var session = driver.session();
 // Create a session to run Cypher statements in.
 // Note: Always make sure to close sessions when you are done using them!
 
+function clearDB(){
+  return session.run('MATCH (n) DETACH DELETE n')
+}
+
 function storeLink(from, to){
   // console.log('Storing link from ' + from + ' to ' + to)
   return session
@@ -42,7 +46,7 @@ var c = new Crawler({
                 try {
                   let parsed = new URL(url)
 
-                  let hostKey = parsed.host
+                  let hostKey = parsed.host.replace(/\.(?:com|co\.uk|ca|cn|fr)$/,'').replace(/^www\./, '')
 
                   data[hostKey] = (data[hostKey] || 0) + 1
                   let next = parsed.protocol + '//' +  parsed.host
@@ -79,5 +83,6 @@ c.on('drain',function(){
   driver.close();
 });
 
-// Queue just one URL, with default callback
-c.queue('http://www.google.com');
+clearDB().then(() => {
+  c.queue(process.argv[2]);
+})
