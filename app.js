@@ -6,7 +6,7 @@ var neo4j = require('neo4j-driver');
 
 let data = {}
 
-let seen = []
+let seen = new Set()
 
 let comp = e => e[1]
 
@@ -46,7 +46,7 @@ var c = new Crawler({
                 try {
                   let parsed = new URL(url)
 
-                  let hostKey = parsed.host.replace(/\.(?:com|co\.uk|ca|cn|fr)$/,'').replace(/^www\./, '')
+                  let hostKey = parsed.host.replace(/\.(?:net|io|com|org|co\.uk|ca|cn|fr|ru|co|tv|es|de|ly|au|to|in|me|nl|jp|it|gl)$/,'').replace(/^www\./, '').replace(/^.*\.(.*)$/,'$1')
 
                   data[hostKey] = (data[hostKey] || 0) + 1
                   let next = parsed.protocol + '//' +  parsed.host
@@ -56,10 +56,10 @@ var c = new Crawler({
 
                   if(from !== to){
                     storeLink(from, to).then(() => {
-                      if(!seen.includes(next)){
+                      if(!seen.has(next)){
                         var highest = _.maxBy(Object.entries(data), comp)
-                        console.log('Queue size:' + c.queueSize + '\tSeen size : ' + seen.length + '\thighest: ' + highest + '\tnew: ' + hostKey)
-                        seen.push(next)
+                        console.log('Queue size:' + c.queueSize + '\tSeen size : ' + seen.size + '\thighest: ' + highest + '\tnew: ' + hostKey)
+                        seen.add(next)
                         c.queue({
                           uri: next,
                           from: hostKey
